@@ -11,7 +11,7 @@ function required(name: string): string {
   return v;
 }
 
-export function buildAuthorizeUrl(req: NextApiRequest): string {
+export function buildAuthorizeUrl(res: NextApiResponse): string {
   const authorizeUrl = required('AUTH_PROVIDER_AUTHORIZE_URL');
   const clientId = required('AUTH_CLIENT_ID');
   const redirectUri = required('AUTH_REDIRECT_URI');
@@ -19,7 +19,7 @@ export function buildAuthorizeUrl(req: NextApiRequest): string {
   const state = crypto.randomBytes(16).toString('hex');
 
   // store state in a short-lived cookie
-  setCookie(req.res as NextApiResponse, STATE_COOKIE, state, {
+  setCookie(res, STATE_COOKIE, state, {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',

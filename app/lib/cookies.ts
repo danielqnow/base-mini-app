@@ -32,5 +32,5 @@ export function clearCookie(res: NextApiResponse, name: string) {
 function appendSetCookie(existing: number | string | string[] | undefined, value: string): string[] {
   if (!existing) return [value];
   if (Array.isArray(existing)) return [...existing, value];
-  return [existing, value];
+  return [String(existing), value];
 }
