@@ -6,6 +6,8 @@ const nextConfig = {
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
+  // Generate a static site to ./out during `next build`
+  output: 'export',
 };
 
 export default nextConfig;
