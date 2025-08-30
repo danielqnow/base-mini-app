@@ -7,8 +7,8 @@ const buildDir = resolve(process.cwd(), 'build');
 
 async function main() {
   if (!existsSync(outDir)) {
-    console.error('No "out" directory found. Ensure next.config.mjs has output: "export" and that `npm run build` ran successfully.');
-    process.exit(1);
+    console.log('No "out" directory found. This is expected for apps with API routes that do not use static export.');
+    return;
   }
   if (existsSync(buildDir)) {
     rmSync(buildDir, { recursive: true, force: true });
