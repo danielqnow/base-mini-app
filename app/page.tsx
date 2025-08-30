@@ -1,116 +1,57 @@
 "use client";
 
-import {
-  useMiniKit,
-  useAddFrame,
-  useOpenUrl,
-} from "@coinbase/onchainkit/minikit";
-import {
-  Name,
-  Identity,
-  Address,
-  Avatar,
-  EthBalance,
-} from "@coinbase/onchainkit/identity";
-import {
-  ConnectWallet,
-  Wallet,
-  WalletDropdown,
-  WalletDropdownDisconnect,
-} from "@coinbase/onchainkit/wallet";
-import { useEffect, useMemo, useState, useCallback } from "react";
-import { Button } from "./components/DemoComponents";
-import { Icon } from "./components/DemoComponents";
-import { Home } from "./components/DemoComponents";
-import { Features } from "./components/DemoComponents";
+import { useState } from "react";
+import { Header } from "./components/Header";
+import { ArchitectureModal } from "./components/ArchitectureModal";
+import { CodeInput } from "./components/CodeInput";
+import { ResultsDisplay } from "./components/ResultsDisplay";
+import { Spinner } from "./components/Spinner";
+import type { AnalysisResult } from "./types";
+import { refactorToPostQuantum } from "./services/geminiService";
 
 export default function App() {
-  const { setFrameReady, isFrameReady, context } = useMiniKit();
-  const [frameAdded, setFrameAdded] = useState(false);
-  const [activeTab, setActiveTab] = useState("home");
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [showArchitecture, setShowArchitecture] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const addFrame = useAddFrame();
-  const openUrl = useOpenUrl();
-
-  useEffect(() => {
-    if (!isFrameReady) {
-      setFrameReady();
+  const handleAnalyze = async (code: string, language: string) => {
+    setIsLoading(true);
+    setError(null);
+    setResult(null);
+    try {
+      const res = await refactorToPostQuantum(code, language);
+      setResult(res);
+    } catch (e: any) {
+      setError(e?.message || "Failed to analyze code");
+    } finally {
+      setIsLoading(false);
     }
-  }, [setFrameReady, isFrameReady]);
-
-  const handleAddFrame = useCallback(async () => {
-    const frameAdded = await addFrame();
-    setFrameAdded(Boolean(frameAdded));
-  }, [addFrame]);
-
-  const saveFrameButton = useMemo(() => {
-    if (context && !context.client.added) {
-      return (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleAddFrame}
-          className="text-[var(--app-accent)] p-4"
-          icon={<Icon name="plus" size="sm" />}
-        >
-          Save Frame
-        </Button>
-      );
-    }
-
-    if (frameAdded) {
-      return (
-        <div className="flex items-center space-x-1 text-sm font-medium text-[#0052FF] animate-fade-out">
-          <Icon name="check" size="sm" className="text-[#0052FF]" />
-          <span>Saved</span>
-        </div>
-      );
-    }
-
-    return null;
-  }, [context, frameAdded, handleAddFrame]);
+  };
 
   return (
     <div className="flex flex-col min-h-screen font-sans text-[var(--app-foreground)] mini-app-theme from-[var(--app-background)] to-[var(--app-gray)]">
-      <div className="w-full max-w-md mx-auto px-4 py-3">
-        <header className="flex justify-between items-center mb-3 h-11">
-          <div>
-            <div className="flex items-center space-x-2">
-              <Wallet className="z-10">
-                <ConnectWallet>
-                  <Name className="text-inherit" />
-                </ConnectWallet>
-                <WalletDropdown>
-                  <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
-                    <Avatar />
-                    <Name />
-                    <Address />
-                    <EthBalance />
-                  </Identity>
-                  <WalletDropdownDisconnect />
-                </WalletDropdown>
-              </Wallet>
-            </div>
+      <div className="w-full max-w-4xl mx-auto px-4 py-6 space-y-6">
+        <Header onShowArchitecture={() => setShowArchitecture(true)} />
+
+        <CodeInput onAnalyze={handleAnalyze} isLoading={isLoading} />
+
+        {isLoading && (
+          <div className="flex justify-center py-6">
+            <Spinner />
           </div>
-          <div>{saveFrameButton}</div>
-        </header>
+        )}
 
-        <main className="flex-1">
-          {activeTab === "home" && <Home setActiveTab={setActiveTab} />}
-          {activeTab === "features" && <Features setActiveTab={setActiveTab} />}
-        </main>
+        {error && (
+          <div className="bg-red-900/30 border border-red-700 text-red-200 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
 
-        <footer className="mt-2 pt-4 flex justify-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-[var(--ock-text-foreground-muted)] text-xs"
-            onClick={() => openUrl("https://base.org/builders/minikit")}
-          >
-            Built on Base with MiniKit
-          </Button>
-        </footer>
+        {result && <ResultsDisplay result={result} />}
       </div>
+
+      <ArchitectureModal isOpen={showArchitecture} onClose={() => setShowArchitecture(false)} />
     </div>
   );
 }

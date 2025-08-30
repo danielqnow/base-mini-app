@@ -65,6 +65,12 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   handler satisfies RouteHandlerConfig<"/api/notify">
 }
 
+// Validate ../../app/api/refactor/route.ts
+{
+  const handler = {} as typeof import("../../app/api/refactor/route.js")
+  handler satisfies RouteHandlerConfig<"/api/refactor">
+}
+
 // Validate ../../app/api/webhook/route.ts
 {
   const handler = {} as typeof import("../../app/api/webhook/route.js")
