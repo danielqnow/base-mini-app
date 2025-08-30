@@ -1,0 +1,31 @@
+{
+    "frame": {
+      "name": "Post-Quantum Refactorizer",
+      "version": "1",
+      "iconUrl": "https://https://base-mini-app-kappa.vercel.app/icon.png",
+      "homeUrl": "https://base-mini-app-kappa.vercel.app",
+      "imageUrl": "https://https://base-mini-app-kappa.vercel.app/image.png",
+      "buttonTitle": "Open App",
+      "splashImageUrl": "https://https://base-mini-app-kappa.vercel.app/splash.png",
+      "splashBackgroundColor": "#ffffff",
+      "webhookUrl": "https://base-mini-app-kappa.vercel.app/api/webhook",
+      "subtitle": "v1.0.0",
+      "description": "Post-Quantum Refactorizer. Secure your code against future threats with AI-powered PQC migration.",
+      "primaryCategory": "developer-tools",
+      "tags": [
+        "developers",
+        "tools",
+        "quantum",
+        "post-quantum",
+        "cryptography"
+      ],
+      "tagline": "Post-Quantum Refactorizer",
+      "ogTitle": "Post-Quantum Refactorizer",
+      "ogDescription": "Post-Quantum Refactorizer"
+    },
+    "accountAssociation": {
+      "header": "",
+      "payload": "",
+      "signature": ""
+    }
+  }

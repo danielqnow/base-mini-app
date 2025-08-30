@@ -3,21 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #111111;
+  /* map base to theme so tailwind classes use the futuristic palette */
+  --background: var(--app-background);
+  --foreground: var(--app-foreground);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #111111;
-    --foreground: #ffffff;
+    --background: #101525;
+    --foreground: #f5f5f5;
   }
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: "Geist", sans-serif;
+  color: var(--app-foreground);
+  background: var(--app-background);
+  font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;

@@ -30,13 +30,13 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language }) => {
   };
 
   return (
-    <div className="bg-gray-900 rounded-b-lg relative">
+    <div className="bg-[var(--app-code-bg)] rounded-b-lg relative">
       <button
         onClick={handleCopy}
-        className="absolute top-3 right-3 p-2 bg-gray-700/50 rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200"
+        className="absolute top-3 right-3 p-2 bg-[var(--app-panel)] rounded-md text-[color:rgba(245,245,245,0.8)] hover:bg-[var(--app-input-bg)] hover:text-[var(--app-foreground)] transition-all duration-200"
         aria-label="Copy code to clipboard"
       >
-        {copied ? <CheckIcon className="text-green-400" /> : <CopyIcon />}
+        {copied ? <CheckIcon className="text-[var(--app-success)]" /> : <CopyIcon />}
       </button>
       <pre className="p-6 overflow-x-auto">
         <code className={`language-${language} text-sm font-mono`}>

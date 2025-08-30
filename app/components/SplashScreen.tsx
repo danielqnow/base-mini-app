@@ -12,8 +12,8 @@ export function SplashScreen({ message = 'Loading…' }: SplashScreenProps) {
         inset: 0,
         display: 'grid',
         placeItems: 'center',
-        background: '#0b0b0c',
-        color: 'white',
+        background: 'var(--app-background)',
+        color: 'var(--app-foreground)',
         zIndex: 9999,
       }}
       aria-busy="true"
@@ -33,7 +33,7 @@ export function SplashScreen({ message = 'Loading…' }: SplashScreenProps) {
             height: 28,
             borderRadius: '9999px',
             border: '3px solid rgba(255,255,255,0.2)',
-            borderTopColor: '#fff',
+            borderTopColor: 'var(--app-accent)',
             animation: 'spin 1s linear infinite',
           }}
         />

@@ -13,7 +13,6 @@ const CloseIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   </svg>
 );
 
-
 export const ArchitectureModal: React.FC<ArchitectureModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
@@ -23,52 +22,52 @@ export const ArchitectureModal: React.FC<ArchitectureModalProps> = ({ isOpen, on
       onClick={onClose}
     >
       <div 
-        className="bg-gray-800 border border-cyan-500/30 rounded-2xl shadow-2xl shadow-cyan-500/20 w-full max-w-2xl p-8 relative transform transition-all duration-300 scale-95 animate-fade-in"
+        className="bg-[var(--app-panel)] border border-[var(--app-input-border)] rounded-2xl shadow-2xl w-full max-w-2xl p-8 relative transform transition-all duration-300 scale-95 animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
         <button 
           onClick={onClose} 
-          className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-[color:rgba(245,245,245,0.6)] hover:text-[var(--app-foreground)] transition-colors"
           aria-label="Close modal"
         >
           <CloseIcon />
         </button>
-        <h2 className="text-3xl font-bold text-cyan-400 mb-4">Refactorizer Architecture</h2>
-        <p className="text-gray-300 mb-6">
+        <h2 className="text-3xl font-bold text-[var(--app-accent)] mb-4">Refactorizer Architecture</h2>
+        <p className="text-[color:rgba(245,245,245,0.8)] mb-6">
           This tool leverages a powerful Generative AI model (Gemini) to simulate the complex process of post-quantum code refactoring. Here's the simulated workflow:
         </p>
         <div className="space-y-4">
           <div className="flex items-start">
-            <div className="flex-shrink-0 h-8 w-8 rounded-full bg-cyan-900/50 text-cyan-400 flex items-center justify-center font-bold mr-4">1</div>
+            <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[color:rgba(0,105,137,0.25)] text-[var(--app-accent)] flex items-center justify-center font-bold mr-4">1</div>
             <div>
-              <h3 className="font-semibold text-white">Code Input & Analysis</h3>
-              <p className="text-gray-400">Your source code is sent to the AI as part of a detailed prompt that establishes the expert persona and the refactoring task.</p>
+              <h3 className="font-semibold text-[var(--app-foreground)]">Code Input & Analysis</h3>
+              <p className="text-[color:rgba(245,245,245,0.7)]">Your source code is sent to the AI as part of a detailed prompt that establishes the expert persona and the refactoring task.</p>
             </div>
           </div>
           <div className="flex items-start">
-            <div className="flex-shrink-0 h-8 w-8 rounded-full bg-cyan-900/50 text-cyan-400 flex items-center justify-center font-bold mr-4">2</div>
+            <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[color:rgba(0,105,137,0.25)] text-[var(--app-accent)] flex items-center justify-center font-bold mr-4">2</div>
             <div>
-              <h3 className="font-semibold text-white">Cryptographic Vulnerability Detection</h3>
-              <p className="text-gray-400">The model analyzes the code to identify classical cryptographic algorithms (e.g., RSA, ECC) that are vulnerable to quantum computers.</p>
+              <h3 className="font-semibold text-[var(--app-foreground)]">Cryptographic Vulnerability Detection</h3>
+              <p className="text-[color:rgba(245,245,245,0.7)]">The model analyzes the code to identify classical cryptographic algorithms (e.g., RSA, ECC) that are vulnerable to quantum computers.</p>
             </div>
           </div>
           <div className="flex items-start">
-            <div className="flex-shrink-0 h-8 w-8 rounded-full bg-cyan-900/50 text-cyan-400 flex items-center justify-center font-bold mr-4">3</div>
+            <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[color:rgba(0,105,137,0.25)] text-[var(--app-accent)] flex items-center justify-center font-bold mr-4">3</div>
             <div>
-              <h3 className="font-semibold text-white">PQC Algorithm Mapping</h3>
-              <p className="text-gray-400">The AI maps the identified vulnerabilities to their appropriate NIST-recommended post-quantum replacements (e.g., RSA-KEM → Kyber, ECDSA → Dilithium).</p>
+              <h3 className="font-semibold text-[var(--app-foreground)]">PQC Algorithm Mapping</h3>
+              <p className="text-[color:rgba(245,245,245,0.7)]">The AI maps the identified vulnerabilities to their appropriate NIST-recommended post-quantum replacements (e.g., RSA-KEM → Kyber, ECDSA → Dilithium).</p>
             </div>
           </div>
            <div className="flex items-start">
-            <div className="flex-shrink-0 h-8 w-8 rounded-full bg-cyan-900/50 text-cyan-400 flex items-center justify-center font-bold mr-4">4</div>
+            <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[color:rgba(0,105,137,0.25)] text-[var(--app-accent)] flex items-center justify-center font-bold mr-4">4</div>
             <div>
-              <h3 className="font-semibold text-white">Code Transformation & Generation</h3>
-              <p className="text-gray-400">The model generates a new, refactored version of the code, along with a summary of changes and unit tests, all formatted into a structured JSON object.</p>
+              <h3 className="font-semibold text-[var(--app-foreground)]">Code Transformation & Generation</h3>
+              <p className="text-[color:rgba(245,245,245,0.7)]">The model generates a new, refactored version of the code, along with a summary of changes and unit tests, all formatted into a structured JSON object.</p>
             </div>
           </div>
         </div>
-         <div className="mt-6 pt-4 border-t border-gray-700 text-center">
-            <button onClick={onClose} className="px-6 py-2 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-500 transition-colors">
+         <div className="mt-6 pt-4 border-t border-[var(--app-input-border)] text-center">
+            <button onClick={onClose} className="px-6 py-2 bg-[var(--app-accent)] text-white font-bold rounded-lg hover:bg-[var(--app-accent-hover)] transition-colors">
                 Got it
             </button>
         </div>

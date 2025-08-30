@@ -1,43 +1,69 @@
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --app-background: #ffffff;
-  --app-foreground: #111111;
-  --app-foreground-muted: #58585c;
-  --app-accent: #0052ff;
-  --app-accent-hover: #0047e1;
-  --app-accent-active: #003db8;
-  --app-accent-light: #e6edff;
-  --app-gray: #f5f5f5;
-  --app-gray-dark: #e0e0e0;
-  --app-card-bg: rgba(255, 255, 255, 0.4);
-  --app-card-border: rgba(0, 0, 0, 0.1);
+  /* Futuristic cyber palette */
+  --app-background: #070b14; /* deeper space */
+  --app-foreground: #f6f7fb;
+  --app-foreground-muted: rgba(246, 247, 251, 0.72);
+
+  --app-accent: #00e5ff;         /* cyan neon */
+  --app-accent-2: #7b2ff7;       /* magenta/violet neon */
+  --app-accent-hover: #6bdbff;
+
+  --app-input-bg: #0e1422;
+  --app-input-border: #283249;
+
+  --app-panel: rgba(14, 20, 34, 0.72);
+  --app-code-bg: #0a0f19;
+
+  --app-success: #4CAF50;
+  --app-success-bg: rgba(56, 142, 60, 0.18);
+
+  /* extras for glows/grids */
+  --app-glow: 0 0 22px rgba(0,229,255,0.25), 0 0 44px rgba(123,47,247,0.18);
+  --app-grid-line: rgba(255,255,255,0.045);
+  --app-grid-size: 24px;
+
+  /* Deprecated/compat names kept and repointed */
+  --app-accent-active: var(--app-accent-hover);
+  --app-accent-light: var(--app-code-bg);
+  --app-gray: var(--app-input-bg);
+  --app-gray-dark: var(--app-input-border);
+  --app-card-bg: rgba(14, 20, 34, 0.64);
+  --app-card-border: var(--app-input-border);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --app-background: #111111;
-    --app-foreground: #ffffff;
-    --app-foreground-muted: #c8c8d1;
-    --app-accent: #0052ff;
-    --app-accent-hover: #0047e1;
-    --app-accent-active: #003db8;
-    --app-accent-light: #1e293b;
-    --app-gray: #1e1e1e;
-    --app-gray-dark: #2e2e2e;
-    --app-card-bg: rgba(17, 17, 17, 0.4);
-    --app-card-border: rgba(115, 115, 115, 0.5);
+    /* keep same palette for dark mode */
+    --app-background: #070b14;
+    --app-foreground: #f6f7fb;
+    --app-foreground-muted: rgba(246, 247, 251, 0.72);
+    --app-accent: #00e5ff;
+    --app-accent-2: #7b2ff7;
+    --app-accent-hover: #6bdbff;
+    --app-input-bg: #0e1422;
+    --app-input-border: #283249;
+    --app-panel: rgba(14, 20, 34, 0.72);
+    --app-code-bg: #0a0f19;
+    --app-success: #4CAF50;
+    --app-success-bg: rgba(56, 142, 60, 0.18);
+    --app-card-bg: rgba(14, 20, 34, 0.64);
+    --app-card-border: var(--app-input-border);
+    --app-glow: 0 0 22px rgba(0,229,255,0.25), 0 0 44px rgba(123,47,247,0.18);
+    --app-grid-line: rgba(255,255,255,0.045);
+    --app-grid-size: 24px;
   }
 }
 
 .mini-app-theme {
-  --ock-font-family: "Geist", sans-serif;
-  --ock-border-radius: 0.75rem;
-  --ock-border-radius-inner: 0.5rem;
+  --ock-font-family: "Inter", sans-serif;
+  --ock-border-radius: 0.9rem;
+  --ock-border-radius-inner: 0.6rem;
 
   /* Text colors */
   --ock-text-inverse: var(--app-background);
@@ -51,39 +77,38 @@
 
   /* Background colors */
   --ock-bg-default: var(--app-background);
-  --ock-bg-default-hover: var(--app-gray);
-  --ock-bg-default-active: var(--app-gray-dark);
-  --ock-bg-alternate: var(--app-gray);
-  --ock-bg-alternate-hover: var(--app-gray-dark);
-  --ock-bg-alternate-active: var(--app-gray-dark);
+  --ock-bg-default-hover: var(--app-input-bg);
+  --ock-bg-default-active: var(--app-input-border);
+  --ock-bg-alternate: var(--app-panel);
+  --ock-bg-alternate-hover: var(--app-input-bg);
+  --ock-bg-alternate-active: var(--app-input-border);
   --ock-bg-inverse: var(--app-foreground);
-  --ock-bg-inverse-hover: #2a2a2a;
-  --ock-bg-inverse-active: #3a3a3a;
+  --ock-bg-inverse-hover: #d4d4d8;
+  --ock-bg-inverse-active: #c4c4cc;
   --ock-bg-primary: var(--app-accent);
   --ock-bg-primary-hover: var(--app-accent-hover);
-  --ock-bg-primary-active: var(--app-accent-active);
-  --ock-bg-primary-washed: var(--app-accent-light);
-  --ock-bg-primary-disabled: #80a8ff;
-  --ock-bg-secondary: var(--app-gray);
-  --ock-bg-secondary-hover: var(--app-gray-dark);
-  --ock-bg-secondary-active: #d1d1d1;
+  --ock-bg-primary-active: var(--app-accent-hover);
+  --ock-bg-primary-washed: var(--app-code-bg);
+  --ock-bg-primary-disabled: #5fb6c8;
+  --ock-bg-secondary: var(--app-panel);
+  --ock-bg-secondary-hover: var(--app-input-bg);
+  --ock-bg-secondary-active: var(--app-input-border);
   --ock-bg-error: #fee2e2;
   --ock-bg-warning: #fef3c7;
   --ock-bg-success: #dcfce7;
   --ock-bg-default-reverse: var(--app-foreground);
 
-  /* Icon colors */
+  /* Icon/Line colors */
   --ock-icon-color-primary: var(--app-accent);
   --ock-icon-color-foreground: var(--app-foreground);
-  --ock-icon-color-foreground-muted: #71717a;
+  --ock-icon-color-foreground-muted: var(--app-foreground-muted);
   --ock-icon-color-inverse: var(--app-background);
   --ock-icon-color-error: #ef4444;
   --ock-icon-color-success: #22c55e;
   --ock-icon-color-warning: #f59e0b;
 
-  /* Line colors */
   --ock-line-primary: var(--app-accent);
-  --ock-line-default: var(--app-gray-dark);
+  --ock-line-default: var(--app-input-border);
   --ock-line-heavy: #a1a1aa;
   --ock-line-inverse: #d4d4d8;
 }
@@ -95,7 +120,7 @@
 body {
   color: var(--app-foreground);
   background: var(--app-background);
-  font-family: var(--font-geist-sans), sans-serif;
+  font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
@@ -107,31 +132,200 @@ body {
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-in-out;
+/* Subtle fade helpers */
+.animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+.animate-fade-out { animation: fadeOut 3s forwards; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { 0% { opacity: 1; } 50% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Futuristic animated grid + dual neon glows */
+.futuristic-bg {
+  background-color: var(--app-background);
+  background-image:
+    linear-gradient(var(--app-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--app-grid-line) 1px, transparent 1px),
+    radial-gradient(600px 600px at 0% 0%, rgba(0,229,255,0.12), transparent 60%),
+    radial-gradient(900px 900px at 100% 100%, rgba(123,47,247,0.12), transparent 60%);
+  background-size: var(--app-grid-size) var(--app-grid-size), var(--app-grid-size) var(--app-grid-size), auto, auto;
+  background-position: 0 0, 0 0, 0 0, 0 0;
+  animation: gridDrift 38s linear infinite;
+  will-change: background-position;
 }
 
-.animate-fade-out {
-  animation: fadeOut 3s forwards;
+/* Glassy panel with neon border and gentle float */
+.panel-glass {
+  position: relative;
+  background: linear-gradient(180deg, rgba(14,20,34,0.78), rgba(14,20,34,0.64));
+  border: 1px solid color-mix(in oklab, var(--app-accent) 18%, var(--app-input-border));
+  border-radius: 14px;
+  box-shadow: var(--app-glow);
+  backdrop-filter: blur(12px) saturate(115%);
+  -webkit-backdrop-filter: blur(12px) saturate(115%);
+  transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease;
+}
+.panel-glass::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg, rgba(0,229,255,0.45), rgba(123,47,247,0.4) 40%, rgba(0,229,255,0.25) 80%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.55;
+}
+.panel-glass:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 26px rgba(0,229,255,0.32), 0 0 52px rgba(123,47,247,0.24);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+/* Inputs with stronger glow focus */
+.input-glow {
+  transition: box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+.input-glow:focus {
+  outline: none;
+  border-color: var(--app-accent-hover);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--app-accent) 60%, transparent),
+    0 0 24px rgba(123,47,247,0.24),
+    inset 0 0 12px rgba(0,229,255,0.12);
+  transform: translateZ(0);
 }
 
-@keyframes fadeOut {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+/* Neon + gradient primary button */
+.btn-primary {
+  width: 100%;
+  padding: 15px 20px;
+  background: linear-gradient(90deg, var(--app-accent) 0%, var(--app-accent-2) 100%);
+  background-size: 200% 100%;
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-size: 1em;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0,229,255,0.35), 0 0 24px rgba(123,47,247,0.25);
+  transition: transform 200ms ease, box-shadow 240ms ease, background-position 600ms linear, filter 200ms ease;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  background-position: 100% 0;
+  box-shadow: 0 0 14px rgba(0,229,255,0.45), 0 0 36px rgba(123,47,247,0.32);
+}
+.btn-primary:active {
+  transform: translateY(0);
+  filter: brightness(0.96);
+}
+
+/* Optional animated neon CTA */
+.btn-neon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 12px;
+  padding: 0.9rem 2rem;
+  background: linear-gradient(90deg, var(--app-accent) 0%, var(--app-accent-2) 100%);
+  background-size: 200% 100%;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 8px rgba(0,229,255,0.35), 0 0 26px rgba(123,47,247,0.25);
+  transition: transform 200ms ease, box-shadow 200ms ease, background-position 600ms linear;
+  animation: shimmer 3s linear infinite;
+}
+.btn-neon:hover {
+  transform: translateY(-1px);
+  background-position: 100% 0;
+  box-shadow: 0 0 10px rgba(0,229,255,0.45), 0 0 36px rgba(123,47,247,0.35);
+}
+.btn-neon:active { transform: translateY(0); }
+
+/* Results split view */
+.results-container {
+  display: flex;
+  width: 90%;
+  max-width: 1200px;
+  gap: 30px;
+  justify-content: center;
+  margin: 0 auto;
+}
+.code-panel {
+  flex: 1;
+  background: linear-gradient(180deg, rgba(14,20,34,0.78), rgba(10,15,25,0.78));
+  padding: 20px;
+  border: 1px solid color-mix(in oklab, var(--app-accent) 16%, var(--app-input-border));
+  border-radius: 12px;
+  box-shadow: 0 0 18px rgba(0,229,255,0.12);
+}
+.code-panel h2 {
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 16px;
+  background: linear-gradient(90deg, var(--app-accent), var(--app-accent-2));
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+
+/* Code block */
+pre {
+  background-color: var(--app-code-bg);
+  padding: 16px;
+  border-radius: 10px;
+  overflow-x: auto;
+  margin: 0;
+  border: 1px solid color-mix(in oklab, var(--app-accent) 12%, var(--app-input-border));
+  box-shadow: inset 0 0 18px rgba(0,229,255,0.08);
+}
+code {
+  font-family: 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.92em;
+  line-height: 1.55;
+  white-space: pre;
+}
+
+/* Modified line highlight */
+.modified {
+  background: linear-gradient(90deg, rgba(76,175,80,0.12), transparent 70%);
+  color: var(--app-foreground);
+  border-left: 2px solid var(--app-success);
+  padding-left: 10px;
+}
+
+/* Loader container */
+#cube-container,
+.cube-container {
+  width: 200px;
+  height: 200px;
+  margin-top: 30px;
+  filter: drop-shadow(0 0 12px rgba(0,229,255,0.25));
+}
+
+/* Subtle text selection */
+::selection {
+  background: color-mix(in srgb, var(--app-accent) 30%, transparent);
+  color: var(--app-foreground);
+}
+
+/* Animations */
+@keyframes shimmer { 0% { background-position: 0% 0; } 100% { background-position: 200% 0; } }
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(0,184,212,0.25); }
+  50% { box-shadow: 0 0 20px rgba(123,47,247,0.35); }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn-neon { animation: none; }
+  .animate-fade-in, .animate-fade-out { animation: none; }
+  .futuristic-bg { animation: none; }
 }
