@@ -1,5 +1,5 @@
 {
-  "name": "my-minikit-app",
+  "name": "base-mini-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
