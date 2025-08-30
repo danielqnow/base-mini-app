@@ -37,6 +37,17 @@ const nextConfig = {
     wagmi: { transform: 'wagmi/{{member}}' },
     '@tanstack/react-query': { transform: '@tanstack/react-query/{{member}}' },
   },
+  async redirects() {
+    return [
+      {
+        source: '/.well-known/farcaster.json',
+        destination:
+          'https://api.farcaster.xyz/miniapps/hosted-manifest/0198fd48-7fde-21d2-bc78-1ebce8f5e0ea',
+        permanent: false,
+        statusCode: 307,
+      },
+    ];
+  },
   webpack: (config, { dev }) => {
     // Increase chunk load timeout (default ~120s). Helpful on slow networks/dev.
     if (config.output) {

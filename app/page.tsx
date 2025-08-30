@@ -37,7 +37,7 @@ export default function App() {
       <div className="w-full max-w-4xl mx-auto px-4 py-6 space-y-6">
         <Header onShowArchitecture={() => setShowArchitecture(true)} />
 
-        <CodeInput onAnalyze={handleAnalyze} isLoading={isLoading} />
+        {!isLoading&& !error && (<CodeInput onAnalyze={handleAnalyze} isLoading={isLoading} />)}
 
         {isLoading && (
           <div className="flex flex-col items-center py-10 animate-fade-in">
