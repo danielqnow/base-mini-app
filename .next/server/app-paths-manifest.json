@@ -1,3 +1,8 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
+  "/.well-known/farcaster.json/route": "app/.well-known/farcaster.json/route.js",
+  "/api/notify/route": "app/api/notify/route.js",
+  "/api/webhook/route": "app/api/webhook/route.js",
+  "/api/refactor/route": "app/api/refactor/route.js",
   "/page": "app/page.js"
 }
