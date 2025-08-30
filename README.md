@@ -110,3 +110,50 @@ To get started building your own frame, follow these steps:
 - [OnchainKit Documentation](https://docs.base.org/builderkits/onchainkit/getting-started)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+
+# Auth + Splash integration
+
+1) Configure OAuth provider in .env (see .env.example). Use your Farcaster auth provider endpoints from the library.
+2) Ensure AUTH_REDIRECT_URI is allowed in your provider.
+3) Visit /login to authenticate.
+4) Protect pages by wrapping content with AppGate.
+5) Optionally wrap your app with AuthProvider to access session via useAuth.
+
+Minimal integration
+- Add AuthProvider around your app (e.g., in _app.tsx):
+
+```tsx
+// ...existing code...
+import { AuthProvider } from '@/context/AuthProvider';
+// ...existing code...
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <AuthProvider>
+      <Component {...pageProps} />
+    </AuthProvider>
+  );
+}
+```
+
+- Protect a page:
+
+```tsx
+// ...existing code...
+import { AppGate } from '@/components/AppGate';
+// ...existing code...
+export default function Dashboard() {
+  return (
+    <AppGate>
+      {/* ...existing code... */}
+      <main>Private content</main>
+      {/* ...existing code... */}
+    </AppGate>
+  );
+}
+```
+
+Notes
+- Login flow: /login -> /api/auth/start -> provider -> /api/auth/callback -> sets session cookie -> redirect "/".
+- Logout: navigate to /logout (or call /api/auth/logout).
+- Session cookie: httpOnly, signed with SESSION_SECRET.
+- Customize SplashScreen UI in components/SplashScreen.tsx.
