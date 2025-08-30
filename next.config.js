@@ -28,6 +28,7 @@ const nextConfig = {
       '@tanstack/react-query',
       '@coinbase/onchainkit',
       '@farcaster/frame-sdk',
+      'three',
     ],
   },
   // Additional safeguard for apps that use named imports
