@@ -94,18 +94,7 @@ export const CodeInput: React.FC<CodeInputProps> = ({ onAnalyze, isLoading }) =>
 
     setIsFetching(true);
     try {
-      const res = await fetch('/api/fetch-code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: trimmedLink }),
-      });
-      if (!res.ok) {
-        const text = await res.text().catch(() => '');
-        throw new Error(text || `Fetch failed with ${res.status}`);
-      }
-      const data = await res.json();
-      const fetched = String(data?.code || '');
-      if (!fetched.trim()) throw new Error('Empty code');
+      const fetched = await fetchCodeWithRetry('/api/fetch-code', { url: trimmedLink });
       setFetchedCode(fetched);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
@@ -243,3 +232,108 @@ export const CodeInput: React.FC<CodeInputProps> = ({ onAnalyze, isLoading }) =>
     </div>
   );
 };
+
+// Helper: simple sleep
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// Helper: normalize/unwrap various error shapes (including double-encoded JSON)
+function normalizeErrorMessage(raw: unknown): string {
+  try {
+    let value: any = raw;
+
+    if (typeof value === 'string') {
+      const t = value.trim();
+      // If it's JSON-looking, try parse
+      if ((t.startsWith('{') && t.endsWith('}')) || (t.startsWith('[') && t.endsWith(']'))) {
+        try { value = JSON.parse(t); } catch { /* ignore */ }
+      } else {
+        return value;
+      }
+    }
+
+    if (value && typeof value === 'object') {
+      // If shape is { error: "<json string>" } or { error: {...} }
+      if ('error' in value) {
+        const err = (value as any).error;
+        if (typeof err === 'string') {
+          try {
+            const inner = JSON.parse(err);
+            return normalizeErrorMessage(inner) || err;
+          } catch {
+            return err;
+          }
+        }
+        if (err && typeof err === 'object') {
+          return err.message || err.status || JSON.stringify(err);
+        }
+      }
+      // Common shapes
+      if ('message' in value && typeof (value as any).message === 'string') {
+        return (value as any).message;
+      }
+      if ('statusText' in value && typeof (value as any).statusText === 'string') {
+        return (value as any).statusText;
+      }
+      return JSON.stringify(value);
+    }
+
+    return typeof value === 'string' ? value : '';
+  } catch {
+    return '';
+  }
+}
+
+// Helper: fetch with retry and friendly errors for 503/overload
+async function fetchCodeWithRetry(endpoint: string, payload: any, retries = 2, baseDelayMs = 700): Promise<string> {
+  let lastErr: unknown;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const fetched = String(data?.code || '');
+        if (!fetched.trim()) throw new Error('Empty code');
+        return fetched;
+      }
+
+      // Not OK -> parse best-effort error
+      let message = `Fetch failed with ${res.status}`;
+      try {
+        const ct = res.headers.get('content-type') || '';
+        const raw = ct.includes('application/json') ? await res.json() : await res.text();
+        message = normalizeErrorMessage(raw) || message;
+      } catch { /* ignore */ }
+
+      // Retry on 503/overload/unavailable
+      if (res.status === 503 || /overloaded|unavailable/i.test(message)) {
+        if (attempt < retries) {
+          await sleep(baseDelayMs * Math.pow(2, attempt));
+          continue;
+        }
+        throw new Error('Service temporarily overloaded. Please try again later.');
+      }
+
+      throw new Error(message);
+    } catch (e: any) {
+      lastErr = e;
+      const msg = String(e?.message || '');
+      const temporary =
+        e?.code === 503 ||
+        /temporarily|overloaded|unavailable|timeout|network|failed to fetch/i.test(msg);
+
+      if (temporary && attempt < retries) {
+        await sleep(baseDelayMs * Math.pow(2, attempt));
+        continue;
+      }
+      throw e;
+    }
+  }
+
+  throw lastErr instanceof Error ? lastErr : new Error('Unknown error');
+}
