@@ -1,118 +1,243 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface CodeInputProps {
   onAnalyze: (code: string, language: string) => void | Promise<void>;
   isLoading: boolean;
 }
 
-const exampleCode = `
-import crypto from 'crypto';
-
-// Classic Key Generation (Vulnerable to Quantum Attacks)
-function generateRsaKeyPair() {
-  const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
-    modulusLength: 2048,
-  });
-  return { publicKey, privateKey };
-}
-
-// Classic Encryption (Vulnerable)
-function rsaEncrypt(data, publicKey) {
-  const encryptedData = crypto.publicEncrypt(
-    {
-      key: publicKey,
-      padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-      oaepHash: 'sha256',
-    },
-    Buffer.from(data)
-  );
-  return encryptedData.toString('base64');
-}
-
-console.log("Generating vulnerable RSA keys...");
-const keys = generateRsaKeyPair();
-const originalText = "This is a secret message!";
-const encryptedText = rsaEncrypt(originalText, keys.publicKey);
-
-console.log("Encrypted with RSA:", encryptedText);
-`;
-
 export const CodeInput: React.FC<CodeInputProps> = ({ onAnalyze, isLoading }) => {
-  const [code, setCode] = useState<string>(exampleCode);
-  const [language, setLanguage] = useState<string>('JavaScript');
   const [link, setLink] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
+  const [fetchedCode, setFetchedCode] = useState<string>('');
+  const [language, setLanguage] = useState<string>('JavaScript');
+
+  const isValidHttpUrl = (value: string) => {
+    try {
+      const u = new URL(value);
+      return u.protocol === 'http:' || u.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
+  const guessLanguageFromUrl = (value: string) => {
+    try {
+      const pathname = new URL(value).pathname.toLowerCase();
+      const ext = pathname.split('.').pop() || '';
+      switch (ext) {
+        case 'sol': return 'Solidity';
+        case 'ts':
+        case 'tsx': return 'TypeScript';
+        case 'js':
+        case 'mjs':
+        case 'cjs': return 'JavaScript';
+        case 'py': return 'Python';
+        case 'rs': return 'Rust';
+        case 'go': return 'Go';
+        case 'java': return 'Java';
+        case 'rb': return 'Ruby';
+        case 'cpp':
+        case 'cc':
+        case 'cxx':
+        case 'hpp':
+        case 'h':
+        case 'c': return 'C++';
+        case 'cs': return 'C#';
+        case 'kt':
+        case 'kts': return 'Kotlin';
+        case 'swift': return 'Swift';
+        case 'php': return 'PHP';
+        case 'sh':
+        case 'bash': return 'Shell';
+        default: return 'JavaScript';
+      }
+    } catch {
+      return 'JavaScript';
+    }
+  };
+
+  useEffect(() => {
+    try {
+      const storedLink = localStorage.getItem('codeinput:link');
+      if (storedLink) setLink(storedLink);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try { localStorage.setItem('codeinput:link', link); } catch {}
+  }, [link]);
+
+  useEffect(() => {
+    setFetchedCode('');
+  }, [link]);
+
+  useEffect(() => {
+    setLanguage(guessLanguageFromUrl(link));
+  }, [link]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (link.trim()) {
-      try {
-        const res = await fetch('/api/fetch-code', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: link.trim() }),
-        });
-        if (!res.ok) throw new Error(await res.text());
-        const data = await res.json();
-        const fetched = String(data?.code || '');
-        await onAnalyze(fetched, language);
-        return;
-      } catch {
-        // Fallback to textarea code if link fetch fails
-      }
+    setError(null);
+    const trimmedLink = link.trim();
+
+    if (!trimmedLink) {
+      setError('Please enter a link to analyze.');
+      return;
     }
-    onAnalyze(code, language);
+    if (!isValidHttpUrl(trimmedLink)) {
+      setError('Enter a valid http(s) URL.');
+      return;
+    }
+
+    setIsFetching(true);
+    try {
+      const res = await fetch('/api/fetch-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: trimmedLink }),
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(text || `Fetch failed with ${res.status}`);
+      }
+      const data = await res.json();
+      const fetched = String(data?.code || '');
+      if (!fetched.trim()) throw new Error('Empty code');
+      setFetchedCode(fetched);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      setError(msg);
+      setFetchedCode('');
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  const handleAnalyze = async () => {
+    if (!fetchedCode.trim()) return;
+    try {
+      await onAnalyze(fetchedCode, language);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      setError(msg);
+    }
   };
 
   return (
-    <div className="panel-glass border border-[var(--app-input-border)] rounded-xl shadow-2xl p-6">
-      <form onSubmit={handleSubmit}>
-        <div className="input-section w-full max-w-xl mx-auto flex flex-col items-center gap-4">
+    <div className="relative rounded-[24px] border border-white/10 panel-glass shadow-2xl shadow-cyan-500/10 p-6 sm:p-8">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-5 w-5 text-cyan-300"
+              fill="currentColor"
+            >
+              <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
+            </svg>
+            <span className="text-sm font-medium text-[var(--app-foreground)]/90">
+              Post-Quantum Refactorizer
+            </span>
+          </div>
+          <button
+            type="button"
+            aria-label="Account"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-[var(--app-foreground)]/80 hover:bg-white/10 transition"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+            >
+              <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Headline */}
+        <h1 className="text-2xl sm:text-3xl font-semibold leading-tight text-[var(--app-foreground)]">
+          Secure your DeFi protocols
+          <br className="hidden sm:block" /> against future quantum threats.
+        </h1>
+
+        {/* Input */}
+        <div className="flex flex-col gap-2">
           <input
             type="url"
-            placeholder="Enter link to analyze"
+            placeholder="Enter link to smart contract or digital signature"
             id="link-input"
             value={link}
             onChange={(e) => setLink(e.target.value)}
-            className="w-full px-5 py-3 rounded-lg bg-[var(--app-input-bg)] border border-[var(--app-input-border)] text-[var(--app-foreground)] input-glow"
+            disabled={isLoading || isFetching}
+            inputMode="url"
+            autoComplete="off"
+            className="w-full h-12 sm:h-14 rounded-full px-5 sm:px-6 bg-white text-gray-900 placeholder:text-gray-500 border-0 outline-none ring-1 ring-inset ring-black/10 focus:ring-2 focus:ring-cyan-400 transition"
           />
+          {error && (
+            <p role="alert" className="text-sm text-red-400">
+              {error}
+            </p>
+          )}
         </div>
 
-        <div className="flex justify-between items-center my-4">
-          <label htmlFor="language-select" className="text-lg font-semibold text-[var(--app-foreground)]">
-            Select Language
-          </label>
-          <select
-            id="language-select"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="input-glow bg-[var(--app-input-bg)] border border-[var(--app-input-border)] rounded-md px-3 py-1.5 text-[var(--app-foreground)] focus:outline-none"
-          >
-            <option>JavaScript</option>
-            <option>Python</option>
-            <option>Rust</option>
-            <option>Go</option>
-            <option>Solidity</option>
-          </select>
+        {/* Code Preview (read-only, animated) */}
+        <div
+          className={`overflow-hidden transition-all duration-500 ${
+            fetchedCode ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0'
+          }`}
+          aria-live="polite"
+        >
+          <div className="rounded-lg border border-white/10 bg-black/40 backdrop-blur p-3">
+            <pre className="text-xs sm:text-sm max-h-80 overflow-auto text-[var(--app-foreground)]/90">
+              <code>{fetchedCode}</code>
+            </pre>
+          </div>
         </div>
 
-        <textarea
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          placeholder="Paste your classic code here..."
-          className="input-glow w-full h-80 bg-[var(--app-input-bg)] border border-[var(--app-input-border)] rounded-lg p-4 font-mono text-sm text-[var(--app-foreground)] focus:outline-none resize-y transition-shadow"
-          spellCheck="false"
-        />
-
-        <div className="mt-6 flex justify-center">
+        {/* Actions */}
+        <div className="pt-1 flex flex-col sm:flex-row gap-3">
+          {/* Fetch Code */}
           <button
             type="submit"
-            disabled={isLoading}
-            className="btn-primary w-full sm:w-auto disabled:opacity-60 disabled:cursor-not-allowed"
+            disabled={isLoading || isFetching}
+            className="w-full h-12 sm:h-14 rounded-full text-sm sm:text-base font-semibold tracking-wide text-white bg-gradient-to-r from-cyan-400 to-purple-500 shadow-lg shadow-cyan-500/20 hover:opacity-95 disabled:opacity-60 disabled:cursor-not-allowed transition inline-flex items-center justify-center"
           >
-            {isLoading ? 'Analyzing...' : 'ANALYZE & REFACTOR'}
+            {isFetching ? (
+              <>
+                <svg
+                  className="mr-2 h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+                Fetching...
+              </>
+            ) : (
+              'FETCH CODE'
+            )}
           </button>
+
+          {/* Analyze & Refactor (enabled only when code is fetched) */}
+          {fetchedCode && (
+            <button
+              type="button"
+              onClick={handleAnalyze}
+              disabled={isLoading || isFetching || !fetchedCode.trim()}
+              className="w-full h-12 sm:h-14 rounded-full text-sm sm:text-base font-semibold tracking-wide text-white bg-gradient-to-r from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/20 hover:opacity-95 disabled:opacity-60 disabled:cursor-not-allowed transition"
+            >
+              {isLoading ? 'Analyzing...' : 'ANALYZE & REFACTOR'}
+            </button>
+          )}
         </div>
       </form>
     </div>
