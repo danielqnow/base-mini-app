@@ -19,7 +19,7 @@ export const MarkdownView: React.FC<{
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          code({ inline, className, children, ...props }) {
+          code({ inline, className, children, ...props }: { inline?: boolean; className?: string; children: React.ReactNode }) {
             const match = /language-(\w+)/.exec(className || "");
             const text = String(children).replace(/\n$/, "");
             if (!inline) {
