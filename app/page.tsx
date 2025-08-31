@@ -43,7 +43,7 @@ export default function App() {
 
         {isLoading && (
           <div className="flex flex-col items-center py-10 animate-fade-in">
-            <FuturisticCanvasSpinner height={300} />
+            <FuturisticCanvasSpinner height={400} />
             <div className="mt-4 text-[color:rgba(245,245,245,0.8)]">Analyzing your code...</div>
           </div>
         )}

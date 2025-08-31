@@ -1,9 +1,10 @@
 import React from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type { CodeProps } from "react-markdown/lib/ast-to-react";
 
-const MarkdownRenderer = ({ content }) => (
+type CodeProps = React.ComponentProps<"code"> & { inline?: boolean };
+
+const MarkdownRenderer = ({ content }: { content: string }) => (
   <ReactMarkdown
     remarkPlugins={[remarkGfm]}
     components={{
@@ -19,7 +20,7 @@ const MarkdownRenderer = ({ content }) => (
         }
         return <code className={className}>{text}</code>;
       },
-    }}
+    } as Components}
   >
     {content}
   </ReactMarkdown>
