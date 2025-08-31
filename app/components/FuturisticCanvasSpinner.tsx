@@ -93,20 +93,22 @@ export default function FuturisticCanvasSpinner({ className, height = 260 }: Pro
       const scale = Math.min(w, h) * 0.18;
       const perspective = 3.2;
 
-      // Project 3D -> 2D
-      const projected: [number, number][] = verts.map(([x, y, z]) => {
-        // rotate around X
-        let y1 = y * Math.cos(rotX) - z * Math.sin(rotX);
-        let z1 = y * Math.sin(rotX) + z * Math.cos(rotX);
-        // rotate around Y
-        let x2 = x * Math.cos(rotY) + z1 * Math.sin(rotY);
-        let z2 = -x * Math.sin(rotY) + z1 * Math.cos(rotY);
-
-        const f = perspective / (perspective - z2);
-        const sx = cx + x2 * scale * f;
-        const sy = cy + y1 * scale * f;
-        return [sx, sy];
-      });
+      // Helper to project a cube at a given size/rotation
+      const project = (rx: number, ry: number, sMul: number) => {
+        const s = scale * sMul;
+        return verts.map(([x, y, z]) => {
+          // rotate around X
+          let y1 = y * Math.cos(rx) - z * Math.sin(rx);
+          let z1 = y * Math.sin(rx) + z * Math.cos(rx);
+          // rotate around Y
+          let x2 = x * Math.cos(ry) + z1 * Math.sin(ry);
+          let z2 = -x * Math.sin(ry) + z1 * Math.cos(ry);
+          const f = perspective / (perspective - z2);
+          const sx = cx + x2 * s * f;
+          const sy = cy + y1 * s * f;
+          return [sx, sy] as [number, number];
+        });
+      };
 
       // Draw orbiting particles
       ctx.globalCompositeOperation = "lighter";
@@ -124,27 +126,43 @@ export default function FuturisticCanvasSpinner({ className, height = 260 }: Pro
         ctx.fill();
       });
 
-      // Draw cube edges with neon glow
-      ctx.lineWidth = 1.25;
-      ctx.shadowBlur = 20;
-      ctx.shadowColor = "rgba(0, 234, 255, 0.9)";
-      ctx.strokeStyle = "rgba(0, 234, 255, 0.75)";
-      edges.forEach(([a, b], i) => {
-        ctx.beginPath();
-        const [x1, y1] = projected[a];
-        const [x2, y2] = projected[b];
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
+      // Draw multiple nested cubes with subtle offsets
+      const cubeLayers = [
+        { size: 1.00, glow: "rgba(0,234,255,0.9)", stroke: "rgba(0,234,255,0.75)" },
+        { size: 0.74, glow: "rgba(185,104,255,0.9)", stroke: "rgba(185,104,255,0.60)" },
+        { size: 0.55, glow: "rgba(0,234,255,0.85)", stroke: "rgba(0,234,255,0.55)" },
+        { size: 0.38, glow: "rgba(185,104,255,0.85)", stroke: "rgba(185,104,255,0.50)" },
+      ];
 
-        // occasional magenta pulses on some edges
-        if (i % 3 === 0) {
-          ctx.shadowColor = "rgba(185, 104, 255, 0.9)";
-          ctx.strokeStyle = "rgba(185, 104, 255, 0.6)";
+      ctx.globalCompositeOperation = "lighter";
+      cubeLayers.forEach((layer, i) => {
+        // Small per-layer rotation offsets and breathing
+        const rx = rotX * (1 + i * 0.03) + i * 0.15 + Math.sin(time * 0.8 + i) * 0.05;
+        const ry = rotY * (1 + i * 0.03) - i * 0.10 + Math.cos(time * 0.7 + i) * 0.05;
+        const projected = project(rx, ry, layer.size);
+
+        ctx.lineWidth = Math.max(0.6, 1.25 - i * 0.18);
+        ctx.shadowBlur = 20 - i * 3;
+        ctx.shadowColor = layer.glow;
+        ctx.strokeStyle = layer.stroke;
+
+        edges.forEach(([a, b], ei) => {
+          ctx.beginPath();
+          const [x1, y1] = projected[a];
+          const [x2, y2] = projected[b];
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
           ctx.stroke();
-          ctx.shadowColor = "rgba(0, 234, 255, 0.9)";
-          ctx.strokeStyle = "rgba(0, 234, 255, 0.75)";
-        }
+
+          // occasional magenta pulses across layers
+          if ((ei + i) % 3 === 0) {
+            ctx.shadowColor = "rgba(185, 104, 255, 0.9)";
+            ctx.strokeStyle = "rgba(185, 104, 255, 0.55)";
+            ctx.stroke();
+            ctx.shadowColor = layer.glow;
+            ctx.strokeStyle = layer.stroke;
+          }
+        });
       });
 
       // Subtle circular rings

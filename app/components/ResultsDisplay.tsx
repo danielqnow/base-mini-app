@@ -16,24 +16,100 @@ type Tab = 'code' | 'summary' | 'tests';
 
 // Normalize possibly JSON-escaped or fenced markdown into plain markdown
 function normalizeMarkdown(input: string): string {
-  let s = (input ?? '').toString().trim();
+  const toString = (v: unknown) => (v ?? '').toString();
 
-  // Strip surrounding single/double quotes if present
-  if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
-    s = s.slice(1, -1);
-  }
+  let s = toString(input).trim();
 
-  // Unescape common sequences
-  s = s
-    .replace(/\\n/g, '\n')
-    .replace(/\\t/g, '\t')
-    .replace(/\r/g, '');
+  const stripOuterQuotes = (v: string): string => {
+    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+      return v.slice(1, -1);
+    }
+    return v;
+  };
 
-  // If the whole content is a single fenced block, unwrap it
-  const fencedMatch = s.match(/^\s*```(?:\w+)?\s*[\r\n]([\s\S]*?)\s*```\s*$/);
-  if (fencedMatch) {
-    s = fencedMatch[1];
-  }
+  const tryJsonParseString = (v: string): string => {
+    // Try strict JSON string parsing
+    try {
+      if (v.startsWith('"') && v.endsWith('"')) {
+        const parsed = JSON.parse(v);
+        if (typeof parsed === 'string') return parsed;
+      }
+      if (v.startsWith("'") && v.endsWith("'")) {
+        // Convert to valid JSON string then parse
+        const asJson = `"${v
+          .slice(1, -1)
+          .replace(/\\/g, '\\\\')
+          .replace(/"/g, '\\"')}"`;
+        const parsed = JSON.parse(asJson);
+        if (typeof parsed === 'string') return parsed;
+      }
+    } catch {
+      // ignore
+    }
+    return v;
+  };
+
+  const jsonUnescape = (v: string): string => {
+    // If it contains JSON-style escapes, unescape by leveraging JSON.parse
+    if (/\\[nrt"']|\\u[0-9a-fA-F]{4}/.test(v)) {
+      try {
+        // Wrap as JSON string literal safely
+        const wrapped =
+          '"' +
+          v
+            .replace(/\\/g, '\\\\')
+            .replace(/"/g, '\\"')
+            .replace(/\r/g, '\\r')
+            .replace(/\n/g, '\\n') +
+          '"';
+        const parsed = JSON.parse(wrapped);
+        if (typeof parsed === 'string') return parsed;
+      } catch {
+        // ignore
+      }
+    }
+    return v;
+  };
+
+  const decodeHtmlEntities = (v: string): string => {
+    // Minimal, safe decode for common entities
+    const map: Record<string, string> = {
+      '&amp;': '&',
+      '&lt;': '<',
+      '&gt;': '>',
+      '&quot;': '"',
+      '&#39;': "'",
+      '&#x27;': "'",
+      '&#x60;': '`',
+      '&#96;': '`',
+      '&#x2F;': '/',
+      '&#47;': '/',
+    };
+    return v.replace(/&(amp|lt|gt|quot|#39|#x27|#x60|#96|#x2F|#47);/g, (m) => map[m] ?? m);
+  };
+
+  const unwrapSingleFencedBlock = (v: string): string => {
+    const m = v.match(/^\s*```(?:\w+)?\s*[\r\n]([\s\S]*?)\s*```\s*$/);
+    return m ? m[1] : v;
+  };
+
+  // 1) Strip one layer of outer quotes if present
+  s = stripOuterQuotes(s);
+
+  // 2) Try to parse as a JSON string (handles \" \\n etc.)
+  s = tryJsonParseString(s);
+
+  // 3) If still escaped, try a generic JSON unescape
+  s = jsonUnescape(s);
+
+  // 4) Decode common HTML entities (e.g., &quot;, &#x27;)
+  s = decodeHtmlEntities(s);
+
+  // 5) Normalize line endings
+  s = s.replace(/\r/g, '');
+
+  // 6) If the whole thing is a single fenced block, unwrap it
+  s = unwrapSingleFencedBlock(s);
 
   return s.trim();
 }
