@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface CodeInputProps {
   onAnalyze: (code: string, language: string) => void | Promise<void>;
@@ -188,6 +188,79 @@ export const CodeInput: React.FC<CodeInputProps> = ({ onAnalyze, isLoading }) =>
     }
   };
 
+  // NEW: highlight.js loader and helpers
+  const hl = useRef<{ highlight: (code: string, lang?: string) => string } | null>(null);
+  const [highlighted, setHighlighted] = useState('');
+  // NEW: track when hljs is ready so we can recompute highlighted HTML
+  const [hlLoaded, setHlLoaded] = useState(false);
+
+  const toHlLang = (lang: string) => {
+    switch (lang) {
+      case 'TypeScript': return 'typescript';
+      case 'JavaScript': return 'javascript';
+      case 'C++': return 'cpp';
+      case 'C#': return 'csharp';
+      case 'Shell': return 'bash';
+      default: return (lang || '').toLowerCase();
+    }
+  };
+
+  const escapeHtml = (s: string) =>
+    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const hljs = (await import('highlight.js/lib/core')).default;
+        await Promise.all([
+          import('highlight.js/lib/languages/javascript').then(m => hljs.registerLanguage('javascript', m.default)),
+          import('highlight.js/lib/languages/typescript').then(m => hljs.registerLanguage('typescript', m.default)),
+          import('highlight.js/lib/languages/python').then(m => hljs.registerLanguage('python', m.default)),
+          import('highlight.js/lib/languages/rust').then(m => hljs.registerLanguage('rust', m.default)),
+          import('highlight.js/lib/languages/go').then(m => hljs.registerLanguage('go', m.default)),
+          import('highlight.js/lib/languages/java').then(m => hljs.registerLanguage('java', m.default)),
+          import('highlight.js/lib/languages/kotlin').then(m => hljs.registerLanguage('kotlin', m.default)),
+          import('highlight.js/lib/languages/cpp').then(m => hljs.registerLanguage('cpp', m.default)),
+          import('highlight.js/lib/languages/csharp').then(m => hljs.registerLanguage('csharp', m.default)),
+          import('highlight.js/lib/languages/php').then(m => hljs.registerLanguage('php', m.default)),
+          import('highlight.js/lib/languages/swift').then(m => hljs.registerLanguage('swift', m.default)),
+          import('highlight.js/lib/languages/ruby').then(m => hljs.registerLanguage('ruby', m.default)),
+          import('highlight.js/lib/languages/bash').then(m => hljs.registerLanguage('bash', m.default)),
+        ]);
+
+        // CHANGED: Solidity via community grammar (more reliable across versions)
+        try {
+          const mod: any = await import('highlightjs-solidity');
+          hljs.registerLanguage('solidity', mod.default ?? mod);
+        } catch {}
+
+        if (!mounted) return;
+        hl.current = {
+          highlight: (code: string, lang?: string) => {
+            try {
+              const l = lang && hljs.getLanguage(lang) ? lang : undefined;
+              return l ? hljs.highlight(code, { language: l }).value : hljs.highlightAuto(code).value;
+            } catch {
+              return escapeHtml(code);
+            }
+          }
+        };
+        setHlLoaded(true);
+      } catch {
+        if (mounted) setHlLoaded(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!fetchedCode) { setHighlighted(''); return; }
+    const langId = toHlLang(language);
+    const html = hl.current ? hl.current.highlight(fetchedCode, langId) : escapeHtml(fetchedCode);
+    setHighlighted(html);
+  }, [fetchedCode, language, hlLoaded]); // CHANGED: include hlLoaded so we recompute after hljs loads
+
   return (
     <div className="relative rounded-[24px] border border-white/10 panel-glass shadow-2xl shadow-cyan-500/10 p-6 sm:p-8">
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -269,8 +342,11 @@ export const CodeInput: React.FC<CodeInputProps> = ({ onAnalyze, isLoading }) =>
               viewerPulse ? 'ring-2 ring-emerald-400 animate-pulse' : ''
             }`}
           >
-            <pre className="text-xs sm:text-sm max-h-80 overflow-auto text-[var(--app-foreground)]/90">
-              <code>{fetchedCode}</code>
+            <pre className="text-xs sm:text-sm max-h-80 overflow-auto text-[var(--app-foreground)]/90 font-mono">
+              <code
+                className={`hljs language-${toHlLang(language)}`}
+                dangerouslySetInnerHTML={{ __html: highlighted || escapeHtml(fetchedCode) }}
+              />
             </pre>
           </div>
         </div>
@@ -313,6 +389,21 @@ export const CodeInput: React.FC<CodeInputProps> = ({ onAnalyze, isLoading }) =>
           )}
         </div>
       </form>
+
+      {/* NEW: Visual Studio-like syntax colors for highlight.js */}
+      <style jsx global>{`
+        .hljs { background: transparent; color: #d4d4d4; }
+        .hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-name { color: #569cd6; }
+        .hljs-built_in, .hljs-type, .hljs-class .hljs-title, .hljs-title.class_ { color: #4ec9b0; }
+        .hljs-string, .hljs-meta .hljs-string, .hljs-template-tag, .hljs-template-variable { color: #ce9178; }
+        .hljs-number, .hljs-attr, .hljs-attribute { color: #b5cea8; }
+        .hljs-title, .hljs-section, .hljs-function .hljs-title { color: #dcdcaa; }
+        .hljs-variable, .hljs-params, .hljs-property, .hljs-meta, .hljs-meta .hljs-keyword { color: #9cdcfe; }
+        .hljs-comment, .hljs-quote { color: #6a9955; font-style: italic; }
+        .hljs-symbol, .hljs-bullet, .hljs-link { color: #d7ba7d; }
+        .hljs-emphasis { font-style: italic; }
+        .hljs-strong { font-weight: 600; }
+      `}</style>
     </div>
   );
 };

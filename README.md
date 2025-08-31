@@ -7,6 +7,12 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-oncha
 - [Tailwind CSS](https://tailwindcss.com)
 - [Next.js](https://nextjs.org/docs)
 
+## Demo Example: Vulnerable Smart Contract
+
+Use this contract as a demo target when showcasing smart contract interactions or security education:
+- VulnerableContract.sol (GitHub): https://github.com/SaurabhSinghDev/VulnerableSmartContract/blob/main/VulnerableContract.sol
+
+
 ## Getting Started
 
 1. Install dependencies:

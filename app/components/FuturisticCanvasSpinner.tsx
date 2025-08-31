@@ -19,9 +19,9 @@ export default function FuturisticCanvasSpinner({ className, height = 260 }: Pro
     const canvas = canvasRef.current!;
     const parent = containerRef.current!;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = parent.clientWidth || 320;
-    const h = parent.clientHeight || height;
-    if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+    const w = parent?.clientWidth || 320;
+    const h = parent?.clientHeight || height;
+    if (canvas?.width !== Math.floor(w * dpr) || canvas?.height !== Math.floor(h * dpr)) {
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
       canvas.style.width = `${w}px`;

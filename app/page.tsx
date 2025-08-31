@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "./components/Header";
 import { ArchitectureModal } from "./components/ArchitectureModal";
 import { CodeInput } from "./components/CodeInput";
@@ -18,6 +18,23 @@ export default function App() {
   const [showArchitecture, setShowArchitecture] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [originalCode, setOriginalCode] = useState<string>("");
+
+  const phrases = [
+    "Analyzing your code...",
+    "Refactoring functions...",
+    "Migrating to post-quantum algorithms...",
+    "Optimizing for security...",
+  ];
+  const [activePhrase, setActivePhrase] = useState(0);
+
+  useEffect(() => {
+    if (!isLoading) return;
+    setActivePhrase(0); // reset when loading starts
+    const id = setInterval(() => {
+      setActivePhrase((i) => (i + 1) % phrases.length);
+    }, 3000); // match animation duration
+    return () => clearInterval(id);
+  }, [isLoading]);
 
   const handleAnalyze = async (code: string, language: string) => {
     setIsLoading(true);
@@ -44,7 +61,18 @@ export default function App() {
         {isLoading && (
           <div className="flex flex-col items-center py-10 animate-fade-in">
             <FuturisticCanvasSpinner height={400} />
-            <div className="mt-4 text-[color:rgba(245,245,245,0.8)]">Analyzing your code...</div>
+            <div className="mt-4 text-[color:rgba(245,245,245,0.8)] h-6">
+              <span
+                key={activePhrase}
+                className="opacity-0 animate-fade-in-out"
+                style={{
+                  animationDuration: "3s",
+                  animationIterationCount: 1,
+                }}
+              >
+                {phrases[activePhrase]}
+              </span>
+            </div>
           </div>
         )}
 
@@ -57,6 +85,28 @@ export default function App() {
         {result && <ResultsDisplay result={result} originalCode={originalCode} />}
       </div>
       <ArchitectureModal isOpen={showArchitecture} onClose={() => setShowArchitecture(false)} />
+
+      <style jsx global>{`
+        @keyframes fade-in-out {
+          0% { opacity: 0; transform: translateY(4px); }
+          10% { opacity: 1; transform: translateY(0); }
+          40% { opacity: 1; transform: translateY(0); }
+          50% { opacity: 0; transform: translateY(-4px); }
+          100% { opacity: 0; transform: translateY(-4px); }
+        }
+        .animate-fade-in-out {
+          animation-name: fade-in-out;
+          animation-timing-function: ease-in-out;
+          animation-fill-mode: both;
+        }
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 300ms ease-out both;
+        }
+      `}</style>
     </div>
   );
 }
