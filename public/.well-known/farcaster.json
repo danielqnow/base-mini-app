@@ -7,11 +7,11 @@
   "frame": {
     "name": "Post-Quantum Refactorizer",
     "version": "1",
-    "iconUrl": "https://https://base-mini-app-kappa.vercel.app/icon.png",
+    "iconUrl": "https://base-mini-app-kappa.vercel.app/icon.png",
     "homeUrl": "https://base-mini-app-kappa.vercel.app",
     "imageUrl": "https://base-mini-app-kappa.vercel.app/image.png",
     "buttonTitle": "Open App",
-    "splashImageUrl": "https://https://base-mini-app-kappa.vercel.app/splash.png",
+    "splashImageUrl": "https://base-mini-app-kappa.vercel.app/splash.png",
     "splashBackgroundColor": "#ffffff",
     "webhookUrl": "https://base-mini-app-kappa.vercel.app/api/webhook",
     "subtitle": "v1.0.0",
