@@ -42,10 +42,21 @@ const nextConfig = {
       {
         source: '/.well-known/farcaster.json',
         destination:
-          'https://api.farcaster.xyz/miniapps/hosted-manifest/0198fd48-7fde-21d2-bc78-1ebce8f5e0ea',
+          'https://api.farcaster.xyz/miniapps/hosted-manifest/0198fdc4-b7d1-e965-44f2-24f9340b227c',
         permanent: false,
         statusCode: 307,
       },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: '/.well-known/farcaster.json',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, max-age=0' },
+          { key: 'Content-Type', value: 'application/json; charset=utf-8' }
+        ]
+      }
     ];
   },
   webpack: (config, { dev }) => {
