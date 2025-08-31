@@ -1,4 +1,9 @@
 {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEzMTY1NzEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgzNkJiOUVhODUwNzVDMThFYjQ3ODQ5RjMzZGE1OTVkMjc4NTU3RjZjIn0",
+    "payload": "eyJkb21haW4iOiJiYXNlLW1pbmktYXBwLWthcHBhLnZlcmNlbC5hcHAifQ",
+    "signature": "MHhmNTZmOTU2ZTRiOTJhZmNjODVhMGM4ODY3YWUwYzE5MTFkOWJjMDlhZDRjOGEzYmEzNzQzZTk3N2Y2ZTZkMTY3MmU5NzcyZTkwMzNlNjBkOGM4YTUyOGM5OTBjMzAxYjk4ZjEwYTIzYzUyOTcyYTVlZGZiMTBjNDZlNjI3ZTI1YjFj"
+  },
   "frame": {
     "name": "Post-Quantum Refactorizer",
     "version": "1",
@@ -22,10 +27,5 @@
     "tagline": "Post-Quantum Refactorizer",
     "ogTitle": "Post-Quantum Refactorizer",
     "ogDescription": "Post-Quantum Refactorizer"
-  },
-  "accountAssociation": {
-      "header": "eyJmaWQiOjEzMTY1NzEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgzNkJiOUVhODUwNzVDMThFYjQ3ODQ5RjMzZGE1OTVkMjc4NTU3RjZjIn0",
-      "payload": "eyJkb21haW4iOiJiYXNlLW1pbmktYXBwLWthcHBhLnZlcmNlbC5hcHAifQ",
-      "signature": "MHhmNTZmOTU2ZTRiOTJhZmNjODVhMGM4ODY3YWUwYzE5MTFkOWJjMDlhZDRjOGEzYmEzNzQzZTk3N2Y2ZTZkMTY3MmU5NzcyZTkwMzNlNjBkOGM4YTUyOGM5OTBjMzAxYjk4ZjEwYTIzYzUyOTcyYTVlZGZiMTBjNDZlNjI3ZTI1YjFj"
   }
 }
