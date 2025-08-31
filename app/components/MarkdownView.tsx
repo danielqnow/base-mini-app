@@ -5,9 +5,14 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { CodeBlock } from "./CodeBlock";
 
-export const MarkdownView: React.FC<{ markdown: string; defaultLang?: string }> = ({
+export const MarkdownView: React.FC<{
+  markdown: string;
+  defaultLang?: string;
+  disableCodeCopy?: boolean;
+}> = ({
   markdown,
   defaultLang = "markdown",
+  disableCodeCopy = false,
 }) => {
   return (
     <div className="prose prose-invert prose-sm sm:prose-base md:prose-lg max-w-none">
@@ -18,6 +23,13 @@ export const MarkdownView: React.FC<{ markdown: string; defaultLang?: string }> 
             const match = /language-(\w+)/.exec(className || "");
             const text = String(children).replace(/\n$/, "");
             if (!inline) {
+              if (disableCodeCopy) {
+                return (
+                  <pre className={className}>
+                    <code {...props}>{text}</code>
+                  </pre>
+                );
+              }
               return (
                 <CodeBlock code={text} language={match?.[1] || defaultLang} />
               );

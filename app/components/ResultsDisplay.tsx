@@ -14,6 +14,30 @@ interface ResultsDisplayProps {
 
 type Tab = 'code' | 'summary' | 'tests';
 
+// Normalize possibly JSON-escaped or fenced markdown into plain markdown
+function normalizeMarkdown(input: string): string {
+  let s = (input ?? '').toString().trim();
+
+  // Strip surrounding single/double quotes if present
+  if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+    s = s.slice(1, -1);
+  }
+
+  // Unescape common sequences
+  s = s
+    .replace(/\\n/g, '\n')
+    .replace(/\\t/g, '\t')
+    .replace(/\r/g, '');
+
+  // If the whole content is a single fenced block, unwrap it
+  const fencedMatch = s.match(/^\s*```(?:\w+)?\s*[\r\n]([\s\S]*?)\s*```\s*$/);
+  if (fencedMatch) {
+    s = fencedMatch[1];
+  }
+
+  return s.trim();
+}
+
 export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, originalCode, onShowCodeInput }) => {
   const [activeTab, setActiveTab] = useState<Tab>('code');
 
@@ -68,7 +92,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, original
   const renderContent = () => {
     switch (activeTab) {
       case 'summary':
-        return <MarkdownView markdown={safeResult.summary} />;
+        return <MarkdownView markdown={normalizeMarkdown(safeResult.summary)} />;
       case 'tests':
         return testsAvailable ? (
           <CodeBlock code={safeResult.unitTests} language="javascript" />
