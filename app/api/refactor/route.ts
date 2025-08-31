@@ -79,7 +79,17 @@ No incluyas nada fuera del JSON.
       }
     }
 
-    if (!parsed?.refactoredCode || !parsed?.summary || !parsed?.unitTests) {
+    if (!parsed?.refactoredCode) {
+      console.error('Missing refactoredCode');
+    }
+    if (!parsed?.summary) {
+      console.error('Missing summary');
+    }
+    if (!parsed?.unitTests) {
+      console.error('Missing unitTests');
+    }
+    
+    if (!parsed?.refactoredCode && !parsed?.summary && !parsed?.unitTests) {
       return NextResponse.json({ error: 'Invalid response shape from model' }, { status: 500 });
     }
 

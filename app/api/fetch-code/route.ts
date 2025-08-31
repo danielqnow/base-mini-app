@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
     const contentType = (res.headers.get('content-type') || '').toLowerCase();
     if (contentType.includes('text/html')) {
       return NextResponse.json(
-        { error: 'Received HTML page instead of raw file. Provide a raw URL.' },
+        { error: 'Received HTML page instead of raw file. Provide a raw URL. You should copy and paste the code.' },
         { status: 415 }
       );
     }
