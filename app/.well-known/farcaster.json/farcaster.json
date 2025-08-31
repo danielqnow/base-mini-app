@@ -1,4 +1,9 @@
 {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEzMTY1NzEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgzNkJiOUVhODUwNzVDMThFYjQ3ODQ5RjMzZGE1OTVkMjc4NTU3RjZjIn0",
+    "payload": "eyJkb21haW4iOiJwb3N0LXF1YW50dW0tcmVmYWN0b3JpemVyLnZlcmNlbC5hcHAifQ",
+    "signature": "MHgzNzQwZTExMTg5YTNiODlmYmIzOWRlN2IyNmRjZTBiYjlkYjk5OGJjM2JkOGQzYjEyNGQ2MjhmOWNjM2UyYWY2NjQwNTIxM2JhMmE3ZTgyYjE2Y2IwMjA4YmIzZjgzODJmMWU4Y2M5ODAzNmQ3ZTVhODU0OTE2YmVkYjEzNTkwYjFi"
+  },
   "frame": {
     "name": "Post-Quantum refactorizer",
     "version": "1",
