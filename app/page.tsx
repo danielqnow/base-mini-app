@@ -8,6 +8,9 @@ import { ResultsDisplay } from "./components/ResultsDisplay";
 import { Spinner } from "./components/Spinner";
 import type { AnalysisResult } from "./types";
 import { refactorToPostQuantum } from "./services/geminiService";
+import dynamic from 'next/dynamic';
+
+const QuantumRefactorPanel = dynamic(() => import('../components/QuantumRefactorPanel'), { ssr: false });
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -54,6 +57,7 @@ export default function App() {
         {result && <ResultsDisplay result={result} originalCode={originalCode} />}
       </div>
 
+      <QuantumRefactorPanel />
       <ArchitectureModal isOpen={showArchitecture} onClose={() => setShowArchitecture(false)} />
     </div>
   );

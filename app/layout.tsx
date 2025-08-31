@@ -2,6 +2,7 @@ import "./theme.css";
 import "@coinbase/onchainkit/styles.css";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import '../styles/quantum.css';
 import { Providers } from "./providers";
 import ChunkLoadGuard from "./components/ChunkLoadGuard";
 

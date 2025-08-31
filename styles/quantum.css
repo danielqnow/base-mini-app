@@ -1,0 +1,208 @@
+/* Quantum UI — standalone but theme-aware (uses theme.css vars if present) */
+
+/* Palette (fallbacks if theme variables are absent) */
+:root {
+  --q-bg: var(--app-background, #070b14);
+  --q-fg: var(--app-foreground, #f6f7fb);
+  --q-fg-muted: var(--app-foreground-muted, rgba(246,247,251,0.72));
+  --q-accent: var(--app-accent, #00e5ff);
+  --q-accent-2: var(--app-accent-2, #7b2ff7);
+  --q-accent-hover: var(--app-accent-hover, #6bdbff);
+  --q-card: var(--app-panel, rgba(14,20,34,0.72));
+  --q-input-bg: var(--app-foreground, #ffffff);
+  --q-input-fg: var(--app-background, #070b14);
+  --q-input-border: var(--app-input-border, #283249);
+  --q-code-bg: var(--app-code-bg, #0a0f19);
+  --q-glow: var(--app-glow, 0 0 22px rgba(0,229,255,0.25), 0 0 44px rgba(123,47,247,0.18));
+  --q-grid-line: var(--app-grid-line, rgba(255,255,255,0.045));
+  --q-grid-size: var(--app-grid-size, 24px);
+}
+
+/* Page/container background with animated grid and dual radial glows */
+.quantum-bg {
+  background-color: var(--q-bg);
+  background-image:
+    linear-gradient(var(--q-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--q-grid-line) 1px, transparent 1px),
+    radial-gradient(600px 600px at 0% 0%, color-mix(in srgb, var(--q-accent) 18%, transparent), transparent 60%),
+    radial-gradient(900px 900px at 100% 100%, color-mix(in srgb, var(--q-accent-2) 18%, transparent), transparent 60%);
+  background-size:
+    var(--q-grid-size) var(--q-grid-size),
+    var(--q-grid-size) var(--q-grid-size),
+    auto,
+    auto;
+  background-position: 0 0, 0 0, 0 0, 0 0;
+  animation: q-grid-drift 38s linear infinite;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+}
+
+/* The glassy neon card */
+.quantum-card {
+  position: relative;
+  width: min(720px, 92vw);
+  padding: clamp(22px, 3.2vw, 36px);
+  border-radius: 18px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--q-card) 92%, transparent), color-mix(in srgb, var(--q-card) 92%, transparent));
+  border: 1px solid color-mix(in oklab, var(--q-accent) 18%, var(--q-input-border));
+  box-shadow: var(--q-glow);
+  backdrop-filter: blur(12px) saturate(115%);
+  -webkit-backdrop-filter: blur(12px) saturate(115%);
+  color: var(--q-fg);
+  isolation: isolate;
+  transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease;
+}
+.quantum-card::before {
+  /* Outer neon ring */
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg, color-mix(in srgb, var(--q-accent) 70%, transparent), color-mix(in srgb, var(--q-accent-2) 66%, transparent) 40%, color-mix(in srgb, var(--q-accent) 55%, transparent) 80%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.quantum-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--q-accent) 32%, transparent), 0 0 52px color-mix(in srgb, var(--q-accent-2) 24%, transparent);
+}
+
+/* Tiny profile/gear icon placeholder (top-right) */
+.quantum-avatar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--q-accent) 24%, transparent), color-mix(in srgb, var(--q-accent-2) 24%, transparent));
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--q-accent) 28%, transparent);
+  color: var(--q-fg);
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+/* Brand line (icon + name) */
+.quantum-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: var(--q-fg-muted);
+  letter-spacing: 0.02em;
+}
+.quantum-brand .icon {
+  width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--q-accent);
+}
+
+/* Title + subtitle */
+.quantum-title {
+  font-weight: 800;
+  font-size: clamp(22px, 3.2vw, 30px);
+  line-height: 1.2;
+  margin: 4px 0 18px;
+  color: var(--q-fg);
+}
+.quantum-subtitle {
+  color: var(--q-fg-muted);
+  margin-bottom: 22px;
+  font-size: 0.98rem;
+}
+
+/* Input + button stack */
+.quantum-stack {
+  display: grid;
+  gap: 14px;
+}
+
+.quantum-input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  height: 52px;
+  padding: 0 18px;
+  border-radius: 14px;
+  background: var(--q-input-bg);
+  color: var(--q-input-fg);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--q-accent) 0%, var(--q-input-border));
+  transition: box-shadow 200ms ease, transform 200ms ease, background-color 200ms ease;
+}
+.quantum-input::placeholder { color: color-mix(in srgb, var(--q-input-fg) 44%, transparent); }
+.quantum-input:focus {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--q-accent) 36%, transparent),
+    0 0 24px color-mix(in srgb, var(--q-accent-2) 24%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--q-accent) 12%, transparent);
+}
+
+/* Primary CTA */
+.quantum-button {
+  height: 56px;
+  border: 0;
+  border-radius: 14px;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  background: linear-gradient(90deg, var(--q-accent) 0%, var(--q-accent-2) 100%);
+  background-size: 200% 100%;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--q-accent) 35%, transparent), 0 0 24px color-mix(in srgb, var(--q-accent-2) 25%, transparent);
+  transition: transform 200ms ease, box-shadow 240ms ease, background-position 600ms linear, filter 200ms ease;
+}
+.quantum-button:hover {
+  transform: translateY(-1px);
+  background-position: 100% 0;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--q-accent) 45%, transparent), 0 0 36px color-mix(in srgb, var(--q-accent-2) 32%, transparent);
+}
+.quantum-button:active { transform: translateY(0); filter: brightness(0.96); }
+.quantum-button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Small corner sparkle (bottom-right of the stage) */
+.quantum-sparkle {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+  background: radial-gradient(circle at 50% 50%, #ffffff 0 20%, transparent 22% 100%),
+              conic-gradient(from 0deg, color-mix(in srgb, var(--q-accent) 70%, transparent), color-mix(in srgb, var(--q-accent-2) 70%, transparent));
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--q-accent-2) 45%, transparent));
+}
+
+/* Utility helpers */
+.quantum-center {
+  display: grid;
+  place-items: center;
+}
+.quantum-muted {
+  color: var(--q-fg-muted);
+}
+
+/* Animations */
+@keyframes q-grid-drift {
+  0%   { background-position: 0 0, 0 0, 0 0, 0 0; }
+  100% { background-position: var(--q-grid-size) 0, 0 var(--q-grid-size), 0 0, 0 0; }
+}
+
+/* Reduced motion safety */
+@media (prefers-reduced-motion: reduce) {
+  .quantum-bg { animation: none; }
+  .quantum-button { transition: none; }
+  .quantum-card { transition: none; }
+}

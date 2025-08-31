@@ -27,7 +27,7 @@ const nextConfig = {
       'viem',
       '@tanstack/react-query',
       '@coinbase/onchainkit',
-      '@farcaster/frame-sdk',
+      '@farcaster/miniapp-sdk',
       'three',
     ],
   },
