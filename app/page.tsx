@@ -5,12 +5,12 @@ import { Header } from "./components/Header";
 import { ArchitectureModal } from "./components/ArchitectureModal";
 import { CodeInput } from "./components/CodeInput";
 import { ResultsDisplay } from "./components/ResultsDisplay";
-import { Spinner } from "./components/Spinner";
 import type { AnalysisResult } from "./types";
 import { refactorToPostQuantum } from "./services/geminiService";
 import dynamic from 'next/dynamic';
+import FuturisticCanvasSpinner from "./components/FuturisticCanvasSpinner";
 
-const QuantumRefactorPanel = dynamic(() => import('../components/QuantumRefactorPanel'), { ssr: false });
+const QuantumRefactorPanel = dynamic(() => import('./components/QuantumRefactorPanel'), { ssr: false });
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +43,7 @@ export default function App() {
 
         {isLoading && (
           <div className="flex flex-col items-center py-10 animate-fade-in">
-            <Spinner />
+            <FuturisticCanvasSpinner height={300} />
             <div className="mt-4 text-[color:rgba(245,245,245,0.8)]">Analyzing your code...</div>
           </div>
         )}
@@ -56,8 +56,6 @@ export default function App() {
 
         {result && <ResultsDisplay result={result} originalCode={originalCode} />}
       </div>
-
-      <QuantumRefactorPanel />
       <ArchitectureModal isOpen={showArchitecture} onClose={() => setShowArchitecture(false)} />
     </div>
   );

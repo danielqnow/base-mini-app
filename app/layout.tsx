@@ -5,6 +5,7 @@ import "./globals.css";
 import '../styles/quantum.css';
 import { Providers } from "./providers";
 import ChunkLoadGuard from "./components/ChunkLoadGuard";
+import { Analytics } from '@vercel/analytics/next';
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -77,6 +78,7 @@ export default function RootLayout({
       <body className="bg-background">
         <ChunkLoadGuard />
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
